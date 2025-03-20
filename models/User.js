@@ -13,7 +13,30 @@ const userSchema = mongoose.Schema({
   password: {
     type: String,
     required: true,
-  }
+  },
+  role: {
+    type: String,
+    enum: ["CUSTOMER", "ADMIN", "SELLER"],
+    default: "CUSTOMER"
+  },
+  cart: [
+    {
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+      },
+    },
+  ],
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
+  ]
 });
 
 const User = new mongoose.model("User", userSchema);
