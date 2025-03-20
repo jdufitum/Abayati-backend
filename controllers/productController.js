@@ -1,4 +1,20 @@
 const Product = require("../models/Product");
+const OpenAI = require('openai')
+
+const openai = new OpenAI({apikey: process.env.OPENAI_API_KEY})
+
+const generateEmbedding = async (text)=>{
+    try{
+        const response = await openai.embeddings.create({
+            model:"text-embedding-ada-002",
+            input: text
+        })
+        return response.data[0].embedding;
+    }catch(err){
+        console.log("Error generating embedding ",err)
+        return null
+    }
+}
 
 exports.createProduct = async (req, res) => {
     try {
@@ -7,8 +23,13 @@ exports.createProduct = async (req, res) => {
         if (!name || !description || !category || !price || !imgUrl) {
             return res.status(400).json({ error: "All fields are required" });
         }
+        const embedding = await generateEmbedding(`${name} ${description}`);
 
-        const newProduct = new Product({ name, description, category, price, imgUrl });
+        if (!embedding) {
+            return res.status(500).json({ error: "Failed to generate embedding" });
+        }
+
+        const newProduct = new Product({ name, description, category, price, imgUrl,embedding });
         await newProduct.save();
 
         res.status(201).json({ message: "Product created successfully", product: newProduct });
