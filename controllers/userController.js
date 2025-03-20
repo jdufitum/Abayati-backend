@@ -22,10 +22,11 @@ exports.register = async(req,res)=>{
 
 exports.login = async(req, res)=>{
     try{
-        const user = User.findOne({email: req.email})
+        const user = await User.findOne({email: req.body.email})
         if(!user){
             return res.status(404).send("Invalid email or password!")
         }
+        
         const isPasswordValid = bcrypt.compareSync(req.body.password,user.password);
         if(!isPasswordValid){
             return res.status(404).send("Invalid email or password!")
@@ -38,14 +39,14 @@ exports.login = async(req, res)=>{
 
         return res.status(200).send({token,user})
     }catch(err){
-        return res.status(500).send(err)
+        return res.status(500).json({"error":err.message})
     }
 }
 
 exports.getUserById = async (req, res) => {
     try {
         const { id } = req.params;
-        const user = await User.findById(id);
+        const user = await User.findOne(id);
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });

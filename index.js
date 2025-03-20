@@ -7,7 +7,7 @@ const {corsFunction} = require("./utils/cors")
 
 const userRoutes = require("./routes/userRoutes")
 const productRoutes = require("./routes/productRoutes")
-const categoryRoutes = require("./routes/userRoutes")
+const categoryRoutes = require("./routes/categoryRoutes")
 const searchRoutes = require("./routes/searchRoutes")
 
 dotenv.config()
