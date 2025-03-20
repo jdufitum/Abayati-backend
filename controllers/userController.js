@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken")
 require("dotenv").config()
 const Product = require("../models/Product")
 
-const register = async(req,res)=>{
+exports.register = async(req,res)=>{
    try{
     const user= req.body
     const duplicateEmail = await User.findOne({email:user.email})
@@ -20,7 +20,7 @@ const register = async(req,res)=>{
    }
 }
 
-const login = async(req, res)=>{
+exports.login = async(req, res)=>{
     try{
         const user = User.findOne({email: req.email})
         if(!user){
@@ -42,7 +42,7 @@ const login = async(req, res)=>{
     }
 }
 
-const addToCart = async (req, res) => {
+exports.addToCart = async (req, res) => {
     try {
         const { userId, productId, quantity } = req.body;
         if (!userId || !productId || quantity < 1) {
@@ -71,7 +71,7 @@ const addToCart = async (req, res) => {
     }
 };
 
-const addToWishlist = async (req, res) => {
+exports.addToWishlist = async (req, res) => {
     try {
         const { userId, productId } = req.body;
         if (!userId || !productId) {
