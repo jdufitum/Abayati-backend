@@ -93,6 +93,34 @@ exports.addToCart = async (req, res) => {
     res.status(500).send(err);
   }
 };
+exports.removeFromCart = async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+
+    if (!userId || !productId) {
+      return res.status(400).json({ error: "Invalid data provided" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const cartItemIndex = user.cart.findIndex((item) => item.productId.equals(productId));
+
+    if (cartItemIndex === -1) {
+      return res.status(400).json({ error: "Product not in cart" });
+    }
+    user.cart.splice(cartItemIndex, 1);
+    await user.save();
+
+    return res.status(200).json({
+      message: "Product removed from cart",
+      cart: user.cart,
+    });
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+};
 
 exports.addToWishlist = async (req, res) => {
   try {
@@ -122,6 +150,33 @@ exports.addToWishlist = async (req, res) => {
 
     return res.status(200).send("Product is already in wishlist");
   } catch (error) {
-    return res.status(500).send(error);
+    return res.status(500).send(error.message);
+  }
+};
+exports.removeFromWishlist = async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+    if (!userId || !productId) {
+      return res.status(400).json({ error: "Invalid data provided" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.wishlist.includes(productId)) {
+      return res.status(400).json({ error: "Product not in wishlist" });
+    }
+
+    user.wishlist = user.wishlist.filter((id) => id.toString() !== productId);
+    await user.save();
+
+    return res.status(200).json({
+      message: "Product removed from wishlist",
+      wishlist: user.wishlist,
+    });
+  } catch (error) {
+    return res.status(500).send(error.message);
   }
 };

@@ -25,24 +25,23 @@ exports.createProduct = async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    const categ = await Category.findOne({ name: category });
+    const categ = await Category.findById(category);
     if (!categ) {
       return res.status(404).send("Category not found!");
     }
 
-    const embedding = await generateEmbedding(`${name} ${description}`);
+    // const embedding = await generateEmbedding(`${name} ${description}`);
 
-    if (!embedding) {
-      return res.status(500).json({ error: "Failed to generate embedding" });
-    }
+    // if (!embedding) {
+    //   return res.status(500).json({ error: "Failed to generate embedding" });
+    // }
 
     const newProduct = new Product({
       name,
       description,
       category,
       price,
-      imgUrl,
-      embedding,
+      imgUrl
     });
     await newProduct.save();
 
