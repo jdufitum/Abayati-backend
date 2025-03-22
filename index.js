@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoutes")
 const productRoutes = require("./routes/productRoutes")
 const categoryRoutes = require("./routes/categoryRoutes")
 const searchRoutes = require("./routes/searchRoutes")
+const paymentRoutes = require("./routes/paymentRoutes")
 
 dotenv.config()
 require("./models/dbConnect")
@@ -21,6 +22,7 @@ app.use(userRoutes)
 app.use(productRoutes)
 app.use(categoryRoutes)
 app.use(searchRoutes)
+app.use(paymentRoutes)
 
 const port = process.env.PORT
 app.listen(port,()=>console.log(`Running on port ${port}`))
