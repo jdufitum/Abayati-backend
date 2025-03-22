@@ -1,0 +1,201 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Abayati APIs",
+      "description": "API documentation for Abayati",
+      "version": "1.0.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "schemes": ["http"],
+    "tags": [
+      {
+          "name": "User",
+          "description": "All User Operations"
+      }
+  ],
+    "paths": {
+      "/register": {
+        "post": {
+            "tags": [
+                "User"
+              ],
+          "summary": "Register a new user",
+          "parameters": [
+            {
+                "name": "username",
+                "in": "formData",
+                "required": true
+              },
+              {
+                  "name": "email",
+                  "in": "formData",
+                  "required": true
+                },
+                {
+                  "name": "password",
+                  "in": "formData",
+                  "required": true
+                }
+          ],
+          "responses": {
+            "200": { "description": "User registered successfully" },
+            "400": { "description": "Email already exists" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+      "/login": {
+        "post": {
+          "tags": [
+                "User"
+              ],
+          "summary": "Login user",
+          "parameters": [
+            {
+              "name": "email",
+              "in": "formData",
+              "required": true
+            },
+            {
+              "name": "password",
+              "in": "formData",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": { "description": "Login successful" },
+            "404": { "description": "Invalid email or password" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+      "/user/{id}": {
+        "get": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Get user by ID",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": { "description": "User data retrieved successfully" },
+            "404": { "description": "User not found" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+
+      "/addToCart": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Add product to cart",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "formData",
+              "required": true
+            },
+            {
+                "name": "productId",
+                "in": "formData",
+                "required": true
+              },
+              {
+                "name": "quantity",
+                "in": "formData",
+                "required": true
+              }
+          ],
+          "responses": {
+            "200": { "description": "Added to cart successfully" },
+            "404": { "description": "User or product not found" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+      "/removeFromCart": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Remove product from cart",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "formData",
+              "required": true
+            },
+            {
+                "name": "productId",
+                "in": "formData",
+                "required": true
+              }
+          ],
+          "responses": {
+            "200": { "description": "Removed from cart successfully" },
+            "400": { "description": "Product not in cart" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+      "/addToWishlist": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Add product to wishlist",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "formData",
+              "required": true
+            },
+            {
+                "name": "productId",
+                "in": "formData",
+                "required": true
+              }
+          ],
+          "responses": {
+            "200": { "description": "Added to wishlist successfully" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+      "/removeFromWishlist": {
+        "post": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Remove product from wishlist",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "body",
+              "required": true
+            },
+            {
+                "name": "productId",
+                "in": "body",
+                "required": true
+              }
+          ],
+          "responses": {
+            "200": { "description": "Removed from wishlist successfully" },
+            "400": { "description": "Product not in wishlist" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      }
+    }
+  }
+   

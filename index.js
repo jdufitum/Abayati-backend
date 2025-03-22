@@ -11,6 +11,9 @@ const categoryRoutes = require("./routes/categoryRoutes")
 const searchRoutes = require("./routes/searchRoutes")
 const paymentRoutes = require("./routes/paymentRoutes")
 
+const SwaggerUi = require("swagger-ui-express")
+const swaggerDocument = require("./api-docs.json")
+
 dotenv.config()
 require("./models/dbConnect")
 
@@ -23,6 +26,7 @@ app.use(productRoutes)
 app.use(categoryRoutes)
 app.use(searchRoutes)
 app.use(paymentRoutes)
+app.use('/api-docs',SwaggerUi.serve, SwaggerUi.setup(swaggerDocument))
 
 const port = process.env.PORT
 app.listen(port,()=>console.log(`Running on port ${port}`))
