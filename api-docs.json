@@ -31,6 +31,16 @@
         "description": "All Product Operations"
     }
   ],
+ "components": {
+  "securitySchemes": {
+    "bearerAuth": {
+      "type": "http",
+      "scheme": "bearer",
+      "bearerFormat": "JWT"
+    }
+  }
+}
+,
     "paths": {
       "/register": {
         "post": {
@@ -68,11 +78,6 @@
                 "User"
               ],
           "summary": "Login user",
-          "security": [
-            {
-              "bearerAuth": []
-            }
-          ],
           "parameters": [
             {
               "name": "email",
@@ -98,6 +103,11 @@
             "User"
           ],
           "summary": "Get user by Token",
+          "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
           "parameters": [
           ],
           "responses": {
