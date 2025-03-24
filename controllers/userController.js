@@ -49,23 +49,22 @@ exports.login = async (req, res) => {
   }
 };
 
+// exports.getUserById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const user = await User.findById(id);
 
-exports.getUserById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findById(id);
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.status(200).send(user);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Internal server error", details: error.message });
-  }
-};
+//     res.status(200).send(user);
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ error: "Internal server error", details: error.message });
+//   }
+// };
 
 exports.getUserByToken = async (req, res) => {
   try {
@@ -112,9 +111,9 @@ exports.addToCart = async (req, res) => {
       user.cart.push({ productId, quantity });
     }
     await user.save();
-    res.status(200).send("Added to Cart!");
+    res.status(200).send({message:"Added to Cart!", data:cartItem});
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send({message: err.message});
   }
 };
 exports.removeFromCart = async (req, res) => {
@@ -139,10 +138,10 @@ exports.removeFromCart = async (req, res) => {
 
     return res.status(200).json({
       message: "Product removed from cart",
-      cart: user.cart,
+      data: user.cart,
     });
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).send({message: error.message});
   }
 };
 
@@ -168,13 +167,13 @@ exports.addToWishlist = async (req, res) => {
         .status(200)
         .json({
           message: "Product added to wishlist",
-          wishlist: user.wishlist,
+          data: user.wishlist,
         });
     }
 
-    return res.status(200).send("Product is already in wishlist");
+    return res.status(200).send({message: "Product is already in wishlist"});
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).send({message: error.message});
   }
 };
 exports.removeFromWishlist = async (req, res) => {
@@ -198,9 +197,9 @@ exports.removeFromWishlist = async (req, res) => {
 
     return res.status(200).json({
       message: "Product removed from wishlist",
-      wishlist: user.wishlist,
+      data: user.wishlist,
     });
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).send({message: error.message});
   }
 };
