@@ -335,7 +335,7 @@
       }
         }
       },
-      "/product/{id}": {
+      "/product/delete/{id}": {
     "delete": {
       "tags": ["Product"],
       "summary": "Delete a product",
@@ -359,7 +359,7 @@
       }
     }
   },
-  "/product/{id}": {
+  "/product/update/{id}": {
     "put": {
       "tags": ["Product"],
       "summary": "Update a product",
@@ -421,7 +421,7 @@
           "required": false,
           "description": "Image URL for the product",
           "schema": {
-            "type": "string",
+            "type": "file",
             "example": "https://example.com/image.jpg"
           }
         },

@@ -93,7 +93,8 @@ exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, ...otherUpdates } = req.body;
-
+    const result = await cloudinary.uploader.upload(req.file.path)
+    const imgUrl = result.secure_url
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -120,6 +121,7 @@ exports.updateProduct = async (req, res) => {
 
       updateFields.name = newName;
       updateFields.description = newDescription;
+      updateFields.imgUrl = imgUrl
     }
     const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, {
       new: true,
