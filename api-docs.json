@@ -12,7 +12,11 @@
       {
           "name": "User",
           "description": "All User Operations"
-      }
+      },
+      {
+        "name": "Product",
+        "description": "All Product Operations"
+    }
   ],
     "paths": {
       "/register": {
@@ -180,12 +184,12 @@
           "parameters": [
             {
               "name": "userId",
-              "in": "body",
+              "in": "formData",
               "required": true
             },
             {
                 "name": "productId",
-                "in": "body",
+                "in": "formData",
                 "required": true
               }
           ],
@@ -195,7 +199,352 @@
             "500": { "description": "Internal server error" }
           }
         }
+      },
+      "/product/{id}": {
+        "get": {
+            "tags": [
+                "Product"
+              ],
+          "summary": "Get product by ID ",
+          "parameters": [
+            {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "type":"string"
+              }
+          ],
+          "responses": {
+            "200": { "description": "Product retrived successfully" },
+            "404": { "description": "Product not found" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+      "/product/create": {
+        "post": {
+            "tags": [
+                "Product"
+              ],
+          "summary": "Create a product",
+          "parameters": [
+            {
+              "name": "name",
+              "in": "formData",
+              "required": true,
+              "type": "string",
+              "description": "Name of the product"
+            },
+            {
+              "name": "description",
+              "in": "formData",
+              "required": true,
+              "type": "string",
+              "description": "Product description"
+            },
+            {
+              "name": "category",
+              "in": "formData",
+              "required": true,
+              "type": "string",
+              "description": "Category ID (ObjectId reference)"
+            },
+            {
+              "name": "price",
+              "in": "formData",
+              "required": true,
+              "type": "number",
+              "format": "float",
+              "description": "Product price"
+            },
+            {
+              "name": "imgUrl",
+              "in": "formData",
+              "required": true,
+              "type": "string",
+              "description": "Image URL for the product"
+            },
+            {
+              "name": "sizeVariations",
+              "in": "formData",
+              "required": false,
+              "type": "string",
+              "description": "Comma-separated sizes (XS, S, M, L, XL, Custom)"
+            },
+            {
+              "name": "colorVariations",
+              "in": "formData",
+              "required": false,
+              "type": "string",
+              "description": "Comma-separated colors"
+            },
+            {
+              "name": "materialDetails",
+              "in": "formData",
+              "required": false,
+              "type": "string",
+              "description": "Comma-separated materials (e.g., Cotton, Silk)"
+            },
+            {
+              "name": "culturalFeatures.styleType",
+              "in": "formData",
+              "required": false,
+              "type": "string",
+              "enum": ["Traditional", "Modern"],
+              "description": "Style type"
+            },
+            {
+              "name": "culturalFeatures.eventCategory",
+              "in": "formData",
+              "required": false,
+              "type": "string",
+              "enum": ["Casual", "Formal", "Wedding", "Ramadan"],
+              "description": "Event category"
+            },
+            {
+              "name": "sleeveAndDesign.sleeveType",
+              "in": "formData",
+              "required": false,
+              "type": "string",
+              "description": "Sleeve type (e.g., Full Sleeve, Short Sleeve)"
+            },
+            {
+              "name": "sleeveAndDesign.embroidery",
+              "in": "formData",
+              "required": false,
+              "type": "boolean",
+              "description": "Has embroidery (true/false)"
+            }
+          ],
+          "responses": {
+            "200": { "description": "Product registered successfully" },
+            "400": { "description": "Invalid data" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+      "/product/all": {
+    "get": {
+      "tags": ["Product"],
+      "summary": "Get all products",
+      "description": "Fetches all products, including their category details.",
+      "responses": {
+        "200": { "description": "Products retrived!" },
+        "404": { "description": "No data" },
+        "500": { "description": "Internal server error" }
       }
+        }
+      },
+      "/product/{id}": {
+    "delete": {
+      "tags": ["Product"],
+      "summary": "Delete a product",
+      "description": "Deletes a product by its ID.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the product to delete",
+          "schema": {
+            "type": "string",
+            "example": "660f29bdfc13ae1a8f0001a9"
+          }
+        }
+      ],
+      "responses": {
+        "200": { "description": "Product deleted successfully" },
+        "404": { "description": "Product not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+  "/product/{id}": {
+    "put": {
+      "tags": ["Product"],
+      "summary": "Update a product",
+      "description": "Updates the product details by its ID.",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the product to update",
+          "schema": {
+            "type": "string",
+            "example": "660f29bdfc13ae1a8f0001a9"
+          }
+        },
+        {
+          "name": "name",
+          "in": "formData",
+          "required": false,
+          "description": "New name of the product",
+          "schema": {
+            "type": "string",
+            "example": "Updated Product Name"
+          }
+        },
+        {
+          "name": "description",
+          "in": "formData",
+          "required": false,
+          "description": "New description of the product",
+          "schema": {
+            "type": "string",
+            "example": "Updated product description"
+          }
+        },
+        {
+          "name": "category",
+          "in": "formData",
+          "required": false,
+          "description": "ID of the category for the product",
+          "schema": {
+            "type": "string",
+            "example": "60c72b2f9b1d4c3a7f6f98f1"
+          }
+        },
+        {
+          "name": "price",
+          "in": "formData",
+          "required": false,
+          "description": "Price of the product",
+          "schema": {
+            "type": "number",
+            "example": 99.99
+          }
+        },
+        {
+          "name": "imgUrl",
+          "in": "formData",
+          "required": false,
+          "description": "Image URL for the product",
+          "schema": {
+            "type": "string",
+            "example": "https://example.com/image.jpg"
+          }
+        },
+        {
+          "name": "sizeVariations",
+          "in": "formData",
+          "required": false,
+          "description": "Size variations for the product",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["XS", "S", "M", "L", "XL", "Custom"]
+            },
+            "example": ["S", "M", "L"]
+          }
+        },
+        {
+          "name": "customMeasurements",
+          "in": "formData",
+          "required": false,
+          "description": "Custom measurements for the product",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "length": {
+                "type": "number",
+                "example": 32
+              },
+              "width": {
+                "type": "number",
+                "example": 24
+              },
+              "otherDetails": {
+                "type": "string",
+                "example": "Custom measurements for a special order"
+              }
+            }
+          }
+        },
+        {
+          "name": "materialDetails",
+          "in": "formData",
+          "required": false,
+          "description": "Material details for the product",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "Cotton"
+            }
+          }
+        },
+        {
+          "name": "sleeveAndDesign",
+          "in": "formData",
+          "required": false,
+          "description": "Sleeve and design details for the product",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "sleeveType": {
+                "type": "string",
+                "example": "Long sleeve"
+              },
+              "embroidery": {
+                "type": "boolean",
+                "example": true
+              },
+              "embellishments": {
+                "type": "string",
+                "example": "Beaded embroidery"
+              }
+            }
+          }
+        },
+        {
+          "name": "colorVariations",
+          "in": "formData",
+          "required": false,
+          "description": "Color variations for the product",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "Red"
+            }
+          }
+        },
+        {
+          "name": "culturalFeatures",
+          "in": "formData",
+          "required": false,
+          "description": "Cultural features of the product",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "styleType": {
+                "type": "string",
+                "enum": ["Traditional", "Modern"],
+                "example": "Traditional"
+              },
+              "regionSpecificDesign": {
+                "type": "string",
+                "example": "African print"
+              },
+              "eventCategory": {
+                "type": "string",
+                "enum": ["Casual", "Formal", "Wedding", "Ramadan"],
+                "example": "Wedding"
+              }
+            }
+          }
+        }
+      ],
+      "responses": {
+        "200": { "description": "Product updated successfully" },
+        "404": { "description": "Product not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  }
+
     }
   }
    
