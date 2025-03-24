@@ -419,11 +419,8 @@
           "name": "imgUrl",
           "in": "formData",
           "required": false,
-          "description": "Image URL for the product",
-          "schema": {
-            "type": "file",
-            "example": "https://example.com/image.jpg"
-          }
+          "description": "Picture for the product",
+            "type": "file"
         },
         {
           "name": "sizeVariations",
