@@ -49,20 +49,43 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.getUserById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findById(id);
+// exports.getUserById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const user = await User.findById(id);
 
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+
+//     res.status(200).send(user);
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ error: "Internal server error", details: error.message });
+//   }
+// };
+
+exports.getUserByToken = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({message:"Access denied. No token provided."});
+    }
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+    const user = await User.findById(decoded._id);
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({message:"User not found."});
     }
 
-    res.status(200).send(user);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Internal server error", details: error.message });
+    return res.status(200).json({
+      message: "User retrived successfully",
+      data: user,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };
 
@@ -88,9 +111,37 @@ exports.addToCart = async (req, res) => {
       user.cart.push({ productId, quantity });
     }
     await user.save();
-    res.status(200).send("Added to Cart!");
+    res.status(200).send({message:"Added to Cart!", data:cartItem});
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send({message: err.message});
+  }
+};
+exports.removeFromCart = async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+
+    if (!userId || !productId) {
+      return res.status(400).json({ error: "Invalid data provided" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const cartItemIndex = user.cart.findIndex((item) => item.productId.equals(productId));
+
+    if (cartItemIndex === -1) {
+      return res.status(400).json({ error: "Product not in cart" });
+    }
+    user.cart.splice(cartItemIndex, 1);
+    await user.save();
+
+    return res.status(200).json({
+      message: "Product removed from cart",
+      data: user.cart,
+    });
+  } catch (error) {
+    return res.status(500).send({message: error.message});
   }
 };
 
@@ -116,12 +167,39 @@ exports.addToWishlist = async (req, res) => {
         .status(200)
         .json({
           message: "Product added to wishlist",
-          wishlist: user.wishlist,
+          data: user.wishlist,
         });
     }
 
-    return res.status(200).send("Product is already in wishlist");
+    return res.status(200).send({message: "Product is already in wishlist"});
   } catch (error) {
-    return res.status(500).send(error);
+    return res.status(500).send({message: error.message});
+  }
+};
+exports.removeFromWishlist = async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+    if (!userId || !productId) {
+      return res.status(400).json({ error: "Invalid data provided" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.wishlist.includes(productId)) {
+      return res.status(400).json({ error: "Product not in wishlist" });
+    }
+
+    user.wishlist = user.wishlist.filter((id) => id.toString() !== productId);
+    await user.save();
+
+    return res.status(200).json({
+      message: "Product removed from wishlist",
+      data: user.wishlist,
+    });
+  } catch (error) {
+    return res.status(500).send({message: error.message});
   }
 };
