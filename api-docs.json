@@ -83,14 +83,8 @@
           "tags": [
             "User"
           ],
-          "summary": "Get user by ID",
+          "summary": "Get user by Token",
           "parameters": [
-            {
-              "in": "path",
-              "name": "id",
-              "required": true,
-              "type": "string"
-            }
           ],
           "responses": {
             "200": { "description": "User data retrieved successfully" },
