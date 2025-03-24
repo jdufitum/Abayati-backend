@@ -49,6 +49,7 @@ exports.login = async (req, res) => {
   }
 };
 
+
 exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -63,6 +64,29 @@ exports.getUserById = async (req, res) => {
     res
       .status(500)
       .json({ error: "Internal server error", details: error.message });
+  }
+};
+
+exports.getUserByToken = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({message:"Access denied. No token provided."});
+    }
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+    const user = await User.findById(decoded._id);
+    if (!user) {
+      return res.status(404).json({message:"User not found."});
+    }
+
+    return res.status(200).json({
+      message: "User retrived successfully",
+      data: user,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };
 
