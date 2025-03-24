@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
     const newUser = await new User(user).save();
-    return res.status(200).send(newUser);
+    return res.status(200).send({message: "Success", data:newUser});
   } catch (err) {
     return res.status(500).send(err);
   }
