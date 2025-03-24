@@ -5,7 +5,7 @@
       "description": "API documentation for Abayati",
       "version": "1.0.0"
     },
-    "host": "https://abayatii-backend.onrender.com/",
+    "host": "abayatii-backend.onrender.com",
     "basePath": "/",
     "schemes": ["https"],
     "tags": [
@@ -261,8 +261,8 @@
               "name": "imgUrl",
               "in": "formData",
               "required": true,
-              "type": "string",
-              "description": "Image URL for the product"
+              "type": "file",
+              "description": "Picture for the product"
             },
             {
               "name": "sizeVariations",
