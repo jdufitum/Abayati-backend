@@ -68,6 +68,11 @@
                 "User"
               ],
           "summary": "Login user",
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
           "parameters": [
             {
               "name": "email",
