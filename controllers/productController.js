@@ -25,12 +25,12 @@ exports.createProduct = async (req, res) => {
     const result = await cloudinary.uploader.upload(req.file.path)
     const imgUrl = result.secure_url
     if (!name || !description || !category || !price || !imgUrl) {
-      return res.status(400).json({ message: "Fill all required fields",error:"Bad request" });
+      return res.status(400).json({ message: "Fill all required fields",error:"Bad request",data:null });
     }
 
     const categ = await Category.findById(category);
     if (!categ) {
-      return res.status(404).send({message: "Category not found!",error:"Not found"});
+      return res.status(404).send({message: "Category not found!",error:"Not found",data:null});
     }
 
 
@@ -78,7 +78,7 @@ exports.getProductById = async (req, res) => {
     const product = await Product.findById(id).populate("category");
 
     if (!product) {
-      return res.status(404).json({ message: "Product not found",error:"Not found" });
+      return res.status(404).json({ message: "Product not found",error:"Not found",data:null });
     }
 
     res.status(200).json(product);
@@ -97,7 +97,7 @@ exports.updateProduct = async (req, res) => {
     const imgUrl = result.secure_url
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ message: "Product not found",error:"Not found" });
+      return res.status(404).json({ message: "Product not found",error:"Not found",data:null });
     }
 
     let updateFields = { ...otherUpdates };
@@ -114,7 +114,7 @@ exports.updateProduct = async (req, res) => {
         if (!embedding) {
           return res
             .status(500)
-            .json({ message: "Failed to generate embedding",error:"Internal server error" });
+            .json({ message: "Failed to generate embedding",error:"Internal server error",data:null });
         }
         updateFields.embedding = embedding;
       }
@@ -137,7 +137,7 @@ exports.deleteProduct = async (req, res) => {
     const deletedProduct = await Product.findByIdAndDelete(id);
 
     if (!deletedProduct) {
-      return res.status(404).json({ message: "Product not found",error:"Not found" });
+      return res.status(404).json({ message: "Product not found",error:"Not found" ,data:null});
     }
 
     res.status(200).json({ message: "Product deleted successfully",data:deletedProduct });

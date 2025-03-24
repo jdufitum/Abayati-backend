@@ -70,13 +70,13 @@ exports.getUserByToken = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      return res.status(401).json({message:"Access denied. No token provided.",error:"Access denied"});
+      return res.status(401).json({message:"Access denied. No token provided.",error:"Access denied",data:null});
     }
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
     const user = await User.findById(decoded._id);
     if (!user) {
-      return res.status(404).json({message:"User not found.",error:"Not found"});
+      return res.status(404).json({message:"User not found.",error:"Not found",data:null});
     } 
 
     return res.status(200).json({
@@ -92,15 +92,15 @@ exports.addToCart = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
     if (!userId || !productId || quantity < 1) {
-      return res.status(400).json({ error: "Bad request",message: "Invalid data provided" });
+      return res.status(400).json({ error: "Bad request",message: "Invalid data provided",data:null });
     }
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: "Not found",message: "User not found" });
+      return res.status(404).json({ error: "Not found",message: "User not found" ,data:null});
     }
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ error: "Not found",message:"Product not found" });
+      return res.status(404).json({ error: "Not found",message:"Product not found" ,data:null});
     }
     const cartItem = user.cart.find((item) => item.productId.equals(productId));
 
@@ -120,17 +120,17 @@ exports.removeFromCart = async (req, res) => {
     const { userId, productId } = req.body;
 
     if (!userId || !productId) {
-      return res.status(400).json({ error: "Bad request",message:"Invalid data provided" });
+      return res.status(400).json({ error: "Bad request",message:"Invalid data provided",data:null });
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: "Not found",message:"User not found" });
+      return res.status(404).json({ error: "Not found",message:"User not found" ,data:null});
     }
     const cartItemIndex = user.cart.findIndex((item) => item.productId.equals(productId));
 
     if (cartItemIndex === -1) {
-      return res.status(404).json({ error: "Not found",message:"Product not in cart" });
+      return res.status(404).json({ error: "Not found",message:"Product not in cart",data:null });
     }
     user.cart.splice(cartItemIndex, 1);
     await user.save();
@@ -148,15 +148,15 @@ exports.addToWishlist = async (req, res) => {
   try {
     const { userId, productId } = req.body;
     if (!userId || !productId) {
-      return res.status(400).json({ error: "Bad request",message:"Invalid data provided" });
+      return res.status(400).json({ error: "Bad request",message:"Invalid data provided",data:null });
     }
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: "Not found",message:"User not found" });
+      return res.status(404).json({ error: "Not found",message:"User not found" ,data:null});
     }
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ error: "Not found", message:"Product not found" });
+      return res.status(404).json({ error: "Not found", message:"Product not found",data:null });
     }
 
     if (!user.wishlist.includes(productId)) {
@@ -170,7 +170,7 @@ exports.addToWishlist = async (req, res) => {
         });
     }
 
-    return res.status(409).send({message: "Product is already in wishlist",error:"Duplicate"});
+    return res.status(409).send({message: "Product is already in wishlist",error:"Duplicate",data:null});
   } catch (error) {
     return res.status(500).send({error: error.message});
   }
@@ -179,16 +179,16 @@ exports.removeFromWishlist = async (req, res) => {
   try {
     const { userId, productId } = req.body;
     if (!userId || !productId) {
-      return res.status(400).json({ error: "Bad request", message:"Invalid data provided" });
+      return res.status(400).json({ error: "Bad request", message:"Invalid data provided",data:null });
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: "Not found", message:"User not found" });
+      return res.status(404).json({ error: "Not found", message:"User not found",data:null });
     }
 
     if (!user.wishlist.includes(productId)) {
-      return res.status(400).json({ error: "Bad request",message:"Product not in wishlist" });
+      return res.status(400).json({ error: "Bad request",message:"Product not in wishlist",data:null });
     }
 
     user.wishlist = user.wishlist.filter((id) => id.toString() !== productId);
