@@ -8,6 +8,15 @@
     "host": "abayatii-backend.onrender.com",
     "basePath": "/",
     "schemes": ["https"],
+    "securityDefinitions": {
+    "Authorization": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "description": "Value: Bearer ",
+      "in": "header",
+      "scheme": "bearer"
+    }
+  },
     "tags": [
       {
           "name": "User",
