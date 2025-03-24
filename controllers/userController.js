@@ -43,7 +43,7 @@ exports.login = async (req, res) => {
       process.env.SECRET_KEY
     );
 
-    return res.status(200).send({data: {token, user} });
+    return res.status(200).send({data: {token, data:user} });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
