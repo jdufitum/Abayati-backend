@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 const Category = require("../models/Category");
 const OpenAI = require("openai");
+const {cloudinary} = require("../utils/cloudinary")
 
 const openai = new OpenAI({ apikey: process.env.OPENAI_API_KEY });
 
@@ -19,16 +20,20 @@ const generateEmbedding = async (text) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    const { name, description, category, price, imgUrl } = req.body;
+    const { name, description, category, price, sizeVariations,customMeasurements,materialDetails,sleeveAndDesign, culturalFeatures,regionSpecificDesign,ratingAndReviews} = req.body;
 
+    const result = await cloudinary.uploader.upload(req.file.path)
+    const imgUrl = result.secure_url
     if (!name || !description || !category || !price || !imgUrl) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: "Fill all required fields" });
     }
 
     const categ = await Category.findById(category);
     if (!categ) {
       return res.status(404).send({message: "Category not found!"});
     }
+
+
 
     // const embedding = await generateEmbedding(`${name} ${description}`);
 
@@ -41,7 +46,8 @@ exports.createProduct = async (req, res) => {
       description,
       category,
       price,
-      imgUrl
+      imgUrl,
+      sizeVariations,customMeasurements,materialDetails,sleeveAndDesign, culturalFeatures,regionSpecificDesign,ratingAndReviews
     });
     await newProduct.save();
 
@@ -87,7 +93,8 @@ exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, ...otherUpdates } = req.body;
-
+    const result = await cloudinary.uploader.upload(req.file.path)
+    const imgUrl = result.secure_url
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -114,6 +121,7 @@ exports.updateProduct = async (req, res) => {
 
       updateFields.name = newName;
       updateFields.description = newDescription;
+      updateFields.imgUrl = imgUrl
     }
     const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, {
       new: true,

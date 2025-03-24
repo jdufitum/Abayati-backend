@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
     const newUser = await new User(user).save();
-    return res.status(200).send(newUser);
+    return res.status(200).send({message: "Success", data:newUser});
   } catch (err) {
     return res.status(500).send(err);
   }
@@ -24,7 +24,7 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.status(404).send("Invalid email or password!");
+      return res.status(404).send({message: "Invalid email or password!"});
     }
 
     const isPasswordValid = bcrypt.compareSync(
@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
       user.password
     );
     if (!isPasswordValid) {
-      return res.status(404).send("Invalid email or password!");
+      return res.status(404).send({message: "Invalid email or password!"});
     }
     const token = jwt.sign(
       {
@@ -43,7 +43,7 @@ exports.login = async (req, res) => {
       process.env.SECRET_KEY
     );
 
-    return res.status(200).send({ token, user });
+    return res.status(200).send({data: {token, data:user} });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
 exports.getUserByToken = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
-
+    console.log(req.headers.authorization)
     if (!token) {
       return res.status(401).json({message:"Access denied. No token provided."});
     }
@@ -78,7 +78,7 @@ exports.getUserByToken = async (req, res) => {
     const user = await User.findById(decoded._id);
     if (!user) {
       return res.status(404).json({message:"User not found."});
-    }
+    } 
 
     return res.status(200).json({
       message: "User retrived successfully",
