@@ -323,7 +323,7 @@
           }
         }
       },
-      "/product/all": {
+      "/products": {
     "get": {
       "tags": ["Product"],
       "summary": "Get all products",
