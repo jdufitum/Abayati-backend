@@ -5,9 +5,9 @@
       "description": "API documentation for Abayati",
       "version": "1.0.0"
     },
-    "host": "abayatii-backend.onrender.com",
+    "host": "localhost:8080",
     "basePath": "/",
-    "schemes": ["https"],
+    "schemes": ["http"],
     "securityDefinitions": {
     "Authorization": {
       "type": "apiKey",
@@ -67,7 +67,7 @@
           ],
           "responses": {
             "200": { "description": "User registered successfully" },
-            "400": { "description": "Email already exists" },
+            "409": { "description": "Email already exists" },
             "500": { "description": "Internal server error" }
           }
         }
