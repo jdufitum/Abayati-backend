@@ -14,6 +14,10 @@
           "description": "All User Operations"
       },
       {
+        "name": "Category",
+        "description": "All Category Operations"
+    },
+      {
         "name": "Product",
         "description": "All Product Operations"
     }
@@ -540,7 +544,178 @@
         "500": { "description": "Internal server error" }
       }
     }
+  },
+"/category/create": {
+  "post": {
+    "tags": ["Category"],
+    "summary": "Create a new category",
+    "description": "Creates a new category with an image and a name.",
+    "parameters": [
+      {
+        "name": "name",
+        "in": "formData",
+        "required": true,
+        "description": "The name of the category",
+        "schema": {
+          "type": "string",
+          "example": "Electronics"
+        }
+      },
+      {
+        "name": "imgUrl",
+        "in": "formData",
+        "required": true,
+        "description": "The image for the category",
+          "type": "file"
+      }
+    ],"responses": {
+  "200": { "description": "Category created successfully" },
+  "400": { "description": "Category already exists" },
+  "500": { "description": "Internal server error" }
+}
   }
+},
+"/categories": {
+  "get": {
+    "tags": ["Category"],
+    "summary": "Get all categories",
+    "description": "Fetches all categories from the database.",
+    "parameters": [],
+    "responses": {
+      "200": {
+        "description": "Categories retrieved successfully"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
+"/category/{id}": {
+  "get": {
+    "tags": ["Category"],
+    "summary": "Get a category by ID",
+    "description": "Fetches a category by its ID from the database.",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "ID of the category to retrieve",
+        "schema": {
+          "type": "string",
+          "example": "660f29bdfc13ae1a8f0001a9"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Category retrieved successfully"
+      },
+      "404": {
+        "description": "Category not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
+"/category/update/{id}": {
+  "put": {
+    "tags": ["Category"],
+    "summary": "Update a category by ID",
+    "description": "Updates an existing category by its ID.",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "ID of the category to update",
+        "schema": {
+          "type": "string",
+          "example": "660f29bdfc13ae1a8f0001a9"
+        }
+      },
+      {
+        "name": "name",
+        "in": "formData",
+        "required": true,
+        "description": "The name of the category",
+        "schema": {
+          "type": "string",
+          "example": "Electronics"
+        }
+      },
+      {
+        "name": "imgUrl",
+        "in": "formData",
+        "required": true,
+        "description": "The image for the category",
+          "type": "file"
+      }
+    
+    ],
+   "responses": {
+      "200": {
+        "description": "Category retrieved successfully"
+      },
+      "404": {
+        "description": "Category not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
+
+"/category/delete/{id}": {
+  "delete": {
+    "tags": ["Category"],
+    "summary": "Delete a category by ID",
+    "description": "Deletes an existing category by its ID.",
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "ID of the category to delete",
+        "schema": {
+          "type": "string",
+          "example": "660f29bdfc13ae1a8f0001a9"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Category deleted successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Category deleted successfully"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Category not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+}
 
     }
   }
