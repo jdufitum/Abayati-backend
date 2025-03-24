@@ -5,9 +5,9 @@
       "description": "API documentation for Abayati",
       "version": "1.0.0"
     },
-    "host": "localhost:8080",
+    "host": "abayatii-backend.onrender.com",
     "basePath": "/",
-    "schemes": ["http"],
+    "schemes": ["https"],
     "securityDefinitions": {
     "Authorization": {
       "type": "apiKey",
