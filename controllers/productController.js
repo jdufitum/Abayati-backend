@@ -22,12 +22,12 @@ exports.createProduct = async (req, res) => {
     const { name, description, category, price, imgUrl } = req.body;
 
     if (!name || !description || !category || !price || !imgUrl) {
-      return res.status(400).json({ error: "All fields are required" });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     const categ = await Category.findById(category);
     if (!categ) {
-      return res.status(404).send("Category not found!");
+      return res.status(404).send({message: "Category not found!"});
     }
 
     // const embedding = await generateEmbedding(`${name} ${description}`);
@@ -47,22 +47,22 @@ exports.createProduct = async (req, res) => {
 
     res
       .status(201)
-      .json({ message: "Product created successfully", product: newProduct });
+      .json({ message: "Product created successfully", data: newProduct });
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Internal server error", details: error.message });
+      .json({ error: error.message });
   }
 };
 
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.find().populate("category"); // Fetch category details
-    res.status(200).json(products);
+    res.status(200).json({message: "Retrived successfully" ,data:products});
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Internal server error", details: error.message });
+      .json({ error: error.message });
   }
 };
 
@@ -72,14 +72,14 @@ exports.getProductById = async (req, res) => {
     const product = await Product.findById(id).populate("category");
 
     if (!product) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ message: "Product not found" });
     }
 
     res.status(200).json(product);
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Internal server error", details: error.message });
+      .json({ error: error.message });
   }
 };
 
@@ -90,7 +90,7 @@ exports.updateProduct = async (req, res) => {
 
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ message: "Product not found" });
     }
 
     let updateFields = { ...otherUpdates };
@@ -107,7 +107,7 @@ exports.updateProduct = async (req, res) => {
         if (!embedding) {
           return res
             .status(500)
-            .json({ error: "Failed to generate embedding" });
+            .json({ message: "Failed to generate embedding" });
         }
         updateFields.embedding = embedding;
       }
@@ -120,7 +120,7 @@ exports.updateProduct = async (req, res) => {
     });
     res.status(200).send("Product updated successfully!");
   } catch (error) {
-    res.status(500).send(error.message);
+    res.status(500).send({error: error.message});
   }
 };
 exports.deleteProduct = async (req, res) => {
@@ -129,14 +129,14 @@ exports.deleteProduct = async (req, res) => {
     const deletedProduct = await Product.findByIdAndDelete(id);
 
     if (!deletedProduct) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ message: "Product not found" });
     }
 
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Internal server error", details: error.message });
+      .json({ error: error.message });
   }
 };
 
@@ -146,8 +146,8 @@ exports.getProductsByCategory = async (req, res) => {
     const products = await Product.find({ category: categoryId }).populate(
       "category"
     );
-    return res.status(200).send(products);
+    return res.status(200).send({message: "Success", data: products});
   } catch (err) {
-    return res.status(500).send(err.message);
+    return res.status(500).send({error: err.message});
   }
 };
