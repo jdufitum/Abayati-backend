@@ -24,7 +24,7 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.status(404).send("Invalid email or password!");
+      return res.status(404).send({message: "Invalid email or password!"});
     }
 
     const isPasswordValid = bcrypt.compareSync(
@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
       user.password
     );
     if (!isPasswordValid) {
-      return res.status(404).send("Invalid email or password!");
+      return res.status(404).send({message: "Invalid email or password!"});
     }
     const token = jwt.sign(
       {
@@ -43,7 +43,7 @@ exports.login = async (req, res) => {
       process.env.SECRET_KEY
     );
 
-    return res.status(200).send({ token, user });
+    return res.status(200).send({ token: token, data: user });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
