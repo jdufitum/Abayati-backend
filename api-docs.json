@@ -33,7 +33,7 @@
   ],
  "components": {
   "securitySchemes": {
-    "bearerAuth": {
+    "BearerAuth": {
       "type": "http",
       "scheme": "bearer",
       "bearerFormat": "JWT"
@@ -105,7 +105,7 @@
           "summary": "Get user by Token",
           "security": [
       {
-        "bearerAuth": []
+        "BearerAuth": []
       }
     ],
           "parameters": [
@@ -181,7 +181,7 @@
           "summary": "Get wishlist of the logged in user",
           "security": [
       {
-        "bearerAuth": []
+        "BearerAuth": []
       }
     ],
           "parameters": [
