@@ -144,6 +144,32 @@ exports.removeFromCart = async (req, res) => {
   }
 };
 
+exports.getCartItems = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({message:"Access denied. No token provided.",error:"Access denied",data:null});
+    }
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const userId = decoded._id; 
+
+    if (!userId) {
+      return res.status(400).json({ error: "Bad request", message: "User ID is required", data: null });
+    }
+
+    const user = await User.findById(userId).populate("cart.productId");
+
+    if (!user) {
+      return res.status(400).json({ error: "Bad request", message: "User ID is required", data: null });
+    }
+
+    res.status(200).json({ message: "Cart items retrieved successfully", data: user.cart });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 exports.addToWishlist = async (req, res) => {
   try {
     const { userId, productId } = req.body;
