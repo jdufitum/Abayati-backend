@@ -162,6 +162,9 @@ exports.getCartItems = async (req, res) => {
     if (!user) {
       return res.status(400).json({ error: "Bad request", message: "User ID is required", data: null });
     }
+    if (!user.cart || user.cart.length === 0) {
+      return res.status(200).json({ message: "Nothing in cart", data: [] });
+    }
 
     res.status(200).json({ message: "Cart items retrieved successfully", data: user.cart });
   } catch (err) {

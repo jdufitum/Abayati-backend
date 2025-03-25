@@ -118,6 +118,27 @@
         }
       },
 
+      "/cart": {
+        "get": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Get the cart of the logged in user",
+          "security": [
+      {
+        "BearerAuth": []
+      }
+    ],
+          "parameters": [
+          ],
+          "responses": {
+            "200": { "description": "Cart retrieved successfully" },
+            "404": { "description": "Cart not found" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
+
       "/addToCart": {
         "post": {
           "tags": [
