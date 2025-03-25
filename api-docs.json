@@ -5,7 +5,7 @@
       "description": "API documentation for Abayati",
       "version": "1.0.0"
     },
-    "host": "abayatii-backend.onrender.com",
+    "host": "localhost:8080",
     "basePath": "/",
     "schemes": ["https"],
     "securityDefinitions": {
@@ -29,7 +29,15 @@
       {
         "name": "Product",
         "description": "All Product Operations"
-    }
+    },
+    {
+      "name": "Order",
+      "description": "Order Operations"
+  },
+  {
+    "name": "Payments",
+    "description": "Payments Operations"
+}
   ],
  "components": {
   "securitySchemes": {
@@ -774,7 +782,75 @@
       }
     }
   }
-}
+},
+
+"/orders": {
+  "post": {
+    "summary": "Create an order",
+    "description": "Creates an order from the user's cart.",
+    "tags": ["Order"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "userId": { "type": "string", "example": "65fa9d8a3e5a4c001b5f1234" }
+            },
+            "required": ["userId"]
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Order created successfully",
+        "content": { "application/json": { "example": { "message": "Order created successfully", "order": {} } } }
+      },
+      "200": {
+        "description": "Cart is empty",
+        "content": { "application/json": { "example": { "message": "Cart is empty!" } } }
+      },
+      "400": { "description": "Invalid request data", "content": { "application/json": { "example": { "error": "Invalid data provided" } } } },
+      "404": { "description": "User or Product not found", "content": { "application/json": { "example": { "error": "User not found" } } } },
+      "500": { "description": "Server error", "content": { "application/json": { "example": { "error": "Internal server error" } } } }
+    }
+  }
+},
+
+"/payments": {
+      "post": {
+        "summary": "Create a payment",
+        "description": "Processes a payment for an order.",
+        "tags": ["Payments"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": { "type": "string", "example": "65fa9d8a3e5a4c001b5f1234" },
+                  "orderId": { "type": "string", "example": "65fb2e0a3e5a4c001b5f5678" },
+                  "paymentMethodId": { "type": "string", "example": "pm_card_visa" }
+                },
+                "required": ["userId", "orderId", "paymentMethodId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment successful",
+            "content": { "application/json": { "example": { "message": "Payment successful", "payment": {}, "order": {} } } }
+          },
+          "400": { "description": "Invalid request or payment failed", "content": { "application/json": { "example": { "error": "Payment failed" } } } },
+          "404": { "description": "Order not found", "content": { "application/json": { "example": { "error": "Order not found" } } } },
+          "500": { "description": "Server error", "content": { "application/json": { "example": { "error": "Payment processing failed" } } } }
+        }
+      }
+    }
 
     }
   }
