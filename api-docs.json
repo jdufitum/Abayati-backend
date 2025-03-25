@@ -173,6 +173,26 @@
           }
         }
       },
+      "/wishlist": {
+        "get": {
+          "tags": [
+            "User"
+          ],
+          "summary": "Get wishlist of the logged in user",
+          "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+          "parameters": [
+          ],
+          "responses": {
+            "200": { "description": "Wishlist retrieved successfully" },
+            "404": { "description": "Wishlist not found" },
+            "500": { "description": "Internal server error" }
+          }
+        }
+      },
       "/addToWishlist": {
         "post": {
           "tags": [
