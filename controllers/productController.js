@@ -35,11 +35,11 @@ exports.createProduct = async (req, res) => {
 
 
 
-    // const embedding = await generateEmbedding(`${name} ${description}`);
+    const embedding = await generateEmbedding(`${name} ${description}`);
 
-    // if (!embedding) {
-    //   return res.status(500).json({ error: "Failed to generate embedding" });
-    // }
+    if (!embedding) {
+      return res.status(500).json({ error: "Failed to generate embedding" });
+    }
 
     const newProduct = new Product({
       name,
@@ -47,6 +47,7 @@ exports.createProduct = async (req, res) => {
       category,
       price,
       imgUrl,
+      embedding,
       sizeVariations,customMeasurements,materialDetails,sleeveAndDesign, culturalFeatures,regionSpecificDesign,ratingAndReviews
     });
     await newProduct.save();
