@@ -33,14 +33,11 @@ exports.createProduct = async (req, res) => {
       return res.status(404).send({message: "Category not found!",error:"Not found",data:null});
     }
 
-
-
-    const embedding = await generateEmbedding(`${name} ${description}`);
+    const embedding = await generateEmbedding(`${name} ${description} ${price} ${sizeVariations} ${customMeasurements} ${materialDetails} ${sleeveAndDesign}${culturalFeatures}${regionSpecificDesign}`);
 
     if (!embedding) {
       return res.status(500).json({ error: "Failed to generate embedding" });
     }
-
     const newProduct = new Product({
       name,
       description,
@@ -110,7 +107,7 @@ exports.updateProduct = async (req, res) => {
 
       if (newName !== product.name || newDescription !== product.description) {
         const embedding = await generateEmbedding(
-          `${newName} ${newDescription}`
+          `${name} ${description} ${price} ${sizeVariations} ${customMeasurements} ${materialDetails} ${sleeveAndDesign}${culturalFeatures}${regionSpecificDesign}`
         );
         if (!embedding) {
           return res
