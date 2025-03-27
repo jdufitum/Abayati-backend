@@ -9,7 +9,7 @@ exports.createCategory = async (req, res) => {
 
         const existingCategory = await Category.findOne({ name });
         if (existingCategory) {
-            return res.status(400).json({ error: "Category already exists" });
+            return res.status(409).json({ error: "Duplicate",message:"Category already exists",data:null });
         }
 
         const newCategory = new Category({ name, imgUrl });
@@ -37,7 +37,7 @@ exports.getCategoryById = async (req, res) => {
         const category = await Category.findById(id);
 
         if (!category) {
-            return res.status(404).json({ error: "Category not found" });
+            return res.status(404).json({ error: "Not found",message:"Category not found",data:null });
         }
 
         res.status(200).json({message: "Success", data:category});
@@ -52,7 +52,7 @@ exports.updateCategory = async (req, res) => {
         const updatedCategory = await Category.findByIdAndUpdate(id, req.body, { new: true });
 
         if (!updatedCategory) {
-            return res.status(404).json({ message: "Category not found" });
+            return res.status(404).json({ message: "Category not found",error:"Not found",data:null });
         }
 
         res.status(200).json({ message: "Category updated successfully", data: updatedCategory });
@@ -67,7 +67,7 @@ exports.deleteCategory = async (req, res) => {
         const deletedCategory = await Category.findByIdAndDelete(id);
 
         if (!deletedCategory) {
-            return res.status(404).json({ message: "Category not found" });
+            return res.status(404).json({ message: "Category not found",error:"Not found",data:null });
         }
 
         res.status(200).json({ message: "Category deleted successfully",data:deletedCategory });

@@ -8,13 +8,18 @@ const User = require("../models/User")
 
 exports.createOrder = async (req, res) => {
     try {
-      const { userId } = req.body;
+       const token = req.headers.authorization?.split(' ')[1];
+          if (!token) {
+            return res.status(401).json({message:"Access denied. No token provided.",error:"Access denied",data:null});
+          }
+          const decoded = jwt.verify(token, process.env.SECRET_KEY);
+          const userId = decoded._id; 
       if (!userId) {
-        return res.status(400).json({ error: "Invalid data provided" });
+        return res.status(400).json({ error: "Bad request", message:"Invalid data provided" });
       }
       const user = await User.findById(userId)
       const cart = user.cart 
-      if(cart.lenght === 0){
+      if(cart.length === 0){
         return res.status(200).send("Cart is empty!")
       } 
       let totalAmount = 0;
@@ -42,58 +47,66 @@ exports.createOrder = async (req, res) => {
     }
   };
 
-exports.createPayment = async (req, res) => {
-  try {
-      const { userId, orderId, paymentMethodId } = req.body;
-
-      if (!userId || !orderId || !paymentMethodId) {
-          return res.status(400).json({ error: "Missing required fields" });
-      }
-
-      const order = await Order.findById(orderId);
-      if (!order) {
-          return res.status(404).send("Order not found");
-      }
-
-      const paymentIntent = await stripe.paymentIntents.create({
-          amount: order.totalAmount * 100, // Convert to cents
-          currency: "qar",
-          payment_method: paymentMethodId,
-          // confirmation_method: "manual",
-          confirm: true,
-          automatic_payment_methods: {
-              enabled: true,
-              allow_redirects: "never" // Prevents redirect-based payment methods
-          }
-      });
-
-      const payment = new Payment({
-          user: userId,
-          order: orderId,
-          amount: order.totalAmount,
-          status: "pending",
-          transactionId: paymentIntent.id,
-          paymentMethod: paymentMethodId,
-      });
-
-      await payment.save();
-
-      if (paymentIntent.status === "succeeded") {
-          order.status = "paid";
-          await order.save();
-
-          payment.status = "completed";
-          await payment.save();
-
-          return res.status(200).json({ message: "Payment successful", payment, order });
-      } else {
-          return res.status(400).json({ error: "Payment failed" });
-      }
-
-  } catch (err) {
-      return res.status(500).send(err.message);
-  }
-};
+  exports.createPayment = async (req, res) => {
+    try {
+        const {orderId, paymentMethodId } = req.body;
+         const token = req.headers.authorization?.split(' ')[1];
+            if (!token) {
+              return res.status(401).json({message:"Access denied. No token provided.",error:"Access denied",data:null});
+            }
+            const decoded = jwt.verify(token, process.env.SECRET_KEY);
+            const userId = decoded._id; 
+  
+        if (!userId || !orderId || !paymentMethodId) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+  
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+  
+        // Ensure order is not already paid
+        if (order.status === "paid") {
+            return res.status(400).json({ error: "Order already paid" });
+        }
+  
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: order.totalAmount * 100, // Convert to cents
+            currency: "qar", // Ensure correct currency
+            payment_method: paymentMethodId,
+            confirm: true,
+            automatic_payment_methods: {
+                enabled: true,
+                allow_redirects: "never"
+            }
+        });
+  
+        const payment = new Payment({
+            user: userId,
+            order: orderId,
+            amount: order.totalAmount,
+            status: paymentIntent.status === "succeeded" ? "completed" : "pending",
+            transactionId: paymentIntent.id,
+            paymentMethod: paymentMethodId,
+        });
+  
+        await payment.save();
+  
+        if (paymentIntent.status === "succeeded") {
+            order.status = "paid";
+            await order.save();
+            return res.status(200).json({ message: "Payment successful", payment, order });
+        } else {
+            return res.status(400).json({ error: "Payment failed", payment });
+        }
+  
+    } catch (err) {
+        console.error("Stripe Error:", err);
+        return res.status(500).json({ error: "Payment processing failed", details: err.message });
+    }
+  };
+  
 
 
 

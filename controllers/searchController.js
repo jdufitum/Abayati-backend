@@ -26,13 +26,13 @@ exports.searchProducts = async (req, res) => {
     if (!queryEmbedding) {
       return res
         .status(500)
-        .json({ error: "Failed to generate query embedding" });
+        .send({ message: "Failed to generate query embedding",error: "Internal server error" });
     }
 
     const products = await Product.find();
 
     if(products.length === 0){
-        return res.status(204).send("We couldn't find what you are looking for")
+        return res.status(204).send({message: "We couldn't find what you are looking for", error:"Not found"})
     }
 
     const similarity = (vec1, vec2) => {
@@ -45,20 +45,23 @@ exports.searchProducts = async (req, res) => {
       );
       return dotProduct / (magnitude1 * magnitude2);
     };
-
+    const similarityThreshold = 0.85;
     const rankedProducts = products
       .map((product) => ({
         ...product.toObject(),
         score: similarity(queryEmbedding, product.embedding),
       }))
-      .sort((a, b) => b.score - a.score) // Sort by highest similarity
+      .filter((product) => product.score >= similarityThreshold)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10);
+      if(rankedProducts.length === 0){
+        return res.status(404).send({message: `No matches for ${query}`, error:"Not found"})
+    }
 
-      .slice(0, 10); // Return top 10 results
-
-    res.status(200).json(rankedProducts);
+    return res.status(200).send({data: rankedProducts});
   } catch (error) {
     res
       .status(500)
-      .json({ error: "Internal server error", details: error.message });
+      .send({ error: "Internal server error", message: error.message });
   }
 };

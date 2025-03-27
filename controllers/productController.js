@@ -25,28 +25,26 @@ exports.createProduct = async (req, res) => {
     const result = await cloudinary.uploader.upload(req.file.path)
     const imgUrl = result.secure_url
     if (!name || !description || !category || !price || !imgUrl) {
-      return res.status(400).json({ message: "Fill all required fields" });
+      return res.status(400).json({ message: "Fill all required fields",error:"Bad request",data:null });
     }
 
     const categ = await Category.findById(category);
     if (!categ) {
-      return res.status(404).send({message: "Category not found!"});
+      return res.status(404).send({message: "Category not found!",error:"Not found",data:null});
     }
 
+    const embedding = await generateEmbedding(`${name} ${description} ${price} ${sizeVariations} ${customMeasurements} ${materialDetails} ${sleeveAndDesign}${culturalFeatures}${regionSpecificDesign}`);
 
-
-    // const embedding = await generateEmbedding(`${name} ${description}`);
-
-    // if (!embedding) {
-    //   return res.status(500).json({ error: "Failed to generate embedding" });
-    // }
-
+    if (!embedding) {
+      return res.status(500).json({ error: "Failed to generate embedding" });
+    }
     const newProduct = new Product({
       name,
       description,
       category,
       price,
       imgUrl,
+      embedding,
       sizeVariations,customMeasurements,materialDetails,sleeveAndDesign, culturalFeatures,regionSpecificDesign,ratingAndReviews
     });
     await newProduct.save();
@@ -78,7 +76,7 @@ exports.getProductById = async (req, res) => {
     const product = await Product.findById(id).populate("category");
 
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Product not found",error:"Not found",data:null });
     }
 
     res.status(200).json(product);
@@ -97,7 +95,7 @@ exports.updateProduct = async (req, res) => {
     const imgUrl = result.secure_url
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Product not found",error:"Not found",data:null });
     }
 
     let updateFields = { ...otherUpdates };
@@ -109,12 +107,12 @@ exports.updateProduct = async (req, res) => {
 
       if (newName !== product.name || newDescription !== product.description) {
         const embedding = await generateEmbedding(
-          `${newName} ${newDescription}`
+          `${name} ${description} ${price} ${sizeVariations} ${customMeasurements} ${materialDetails} ${sleeveAndDesign}${culturalFeatures}${regionSpecificDesign}`
         );
         if (!embedding) {
           return res
             .status(500)
-            .json({ message: "Failed to generate embedding" });
+            .json({ message: "Failed to generate embedding",error:"Internal server error",data:null });
         }
         updateFields.embedding = embedding;
       }
@@ -126,7 +124,7 @@ exports.updateProduct = async (req, res) => {
     const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, {
       new: true,
     });
-    res.status(200).send("Product updated successfully!");
+    res.status(200).send({message: "Product updated successfully!",data:updatedProduct});
   } catch (error) {
     res.status(500).send({error: error.message});
   }
@@ -137,10 +135,10 @@ exports.deleteProduct = async (req, res) => {
     const deletedProduct = await Product.findByIdAndDelete(id);
 
     if (!deletedProduct) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: "Product not found",error:"Not found" ,data:null});
     }
 
-    res.status(200).json({ message: "Product deleted successfully" });
+    res.status(200).json({ message: "Product deleted successfully",data:deletedProduct });
   } catch (error) {
     res
       .status(500)
