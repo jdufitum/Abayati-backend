@@ -45,7 +45,7 @@ exports.searchProducts = async (req, res) => {
       );
       return dotProduct / (magnitude1 * magnitude2);
     };
-    const similarityThreshold = 0.8;
+    const similarityThreshold = 0.85;
     const rankedProducts = products
       .map((product) => ({
         ...product.toObject(),
