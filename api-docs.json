@@ -31,6 +31,10 @@
         "description": "All Product Operations"
     },
     {
+      "name": "Search",
+      "description": "Search products"
+  },
+    {
       "name": "Order",
       "description": "Order Operations"
   },
@@ -612,6 +616,29 @@
       }
     }
   },
+
+  "/search": {
+    "post": {
+        "tags": [
+            "Search"
+          ],
+      "summary": "Search products ",
+      "parameters": [
+        {
+            "name": "query",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+          }
+      ],
+      "responses": {
+        "200": { "description": "Product retrived successfully" },
+        "404": { "description": "Product not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
 "/category/create": {
   "post": {
     "tags": ["Category"],
