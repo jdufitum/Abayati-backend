@@ -1,6 +1,7 @@
 require("dotenv").config();
 const axios = require("axios");
 const { cloudinary } = require("../utils/cloudinary");
+const Product = require("../models/Product")
 
 // app.post("/measurements", upload.fields([{ name: "front" }, { name: "side" }]),
 exports.createMeasurements = async (req, res) => {
@@ -114,8 +115,18 @@ exports.getMeasurementsById = async (req,res)=>{
 exports.virtualTryOn = async (req, res) => {
   const { user_id, clothing_id } = req.body;
   try {
+
+    const product = await Product.findById(clothing_id);
+
+    if (!product) {
+      return res.status(400).send({
+        message: "Clothing ID not found in the database",
+        error: "Not found",
+      });
+    }
+
     const response = await axios.post(
-      `${THREEDLOOK_BASE_URL}/virtual-tryon`,
+      `${process.env.THREEDLOOK_GET_URL}/virtual-tryon`,
       {
         user_id,
         clothing_id,

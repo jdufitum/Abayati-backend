@@ -34,6 +34,10 @@
       "name": "Search",
       "description": "Search products"
   },
+  {
+    "name": "Measurements",
+    "description": "Get AI measurements by pictures!"
+},
     {
       "name": "Order",
       "description": "Order Operations"
@@ -634,6 +638,90 @@
       "responses": {
         "200": { "description": "Product retrived successfully" },
         "404": { "description": "Product not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
+  "/user/createMeasurements": {
+    "post": {
+        "tags": [
+            "Measurements"
+          ],
+      "summary": "Get measurements ",
+      "parameters": [
+        {
+            "name": "name",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+          },
+          {
+            "name": "gender",
+            "in": "formData",
+            "required": true,
+            "type":"string",
+            "enum":["male","female"]
+          },
+          {
+            "name": "height",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+          },
+          {
+            "name": "weight",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+          },
+          {
+            "name": "front_image",
+            "in": "formData",
+            "required": true,
+            "type":"file"
+          },
+          {
+            "name": "side_image",
+            "in": "formData",
+            "required": true,
+            "type":"file"
+          }
+      ],
+      "responses": {
+        "200": { "description": "Measurement created successfully" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
+  "/user/getMeasurements": {
+    "get": {
+        "tags": [
+            "Measurements"
+          ],
+      "summary": "Get measurements for all people",
+      "parameters": [
+      ],
+      "responses": {
+        "200": { "description": "Measurements retrived successfully" },
+        "404": { "description": "Measurements not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
+  "/user/getMeasurements/{personId}": {
+    "get": {
+        "tags": [
+            "Measurements"
+          ],
+      "summary": "Get measurements for one person",
+      "parameters": [
+      ],
+      "responses": {
+        "200": { "description": "Measurements retrived successfully" },
+        "404": { "description": "Measurements not found" },
         "500": { "description": "Internal server error" }
       }
     }
