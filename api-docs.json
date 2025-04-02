@@ -37,6 +37,9 @@
   {
     "name": "Measurements",
     "description": "Get AI measurements by pictures!"
+}, {
+  "name": "Virtual TryOn",
+  "description": "Tryon different products!"
 },
     {
       "name": "Order",
@@ -722,6 +725,35 @@
       "responses": {
         "200": { "description": "Measurements retrived successfully" },
         "404": { "description": "Measurements not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
+  " /user/virtualTryon/": {
+    "post": {
+        "tags": [
+            "Virtual TryOn"
+          ],
+      "summary": "Try on different clothes!",
+      "parameters": [
+        {
+          "name": "humanImage",
+          "in": "formData",
+          "required": true,
+          "description": "The picture of yourself",
+            "type": "file"
+        },
+        {
+          "name": "clothId",
+          "in": "formData",
+          "required": true,
+          "description": "The id for the product you want to tryon",
+            "type": "string"
+        }
+      ],
+      "responses": {
+        "200": { "description": "Virtual tryon done successfully" },
         "500": { "description": "Internal server error" }
       }
     }
