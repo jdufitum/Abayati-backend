@@ -23,7 +23,7 @@ exports.createStore = async (req, res) => {
 
 exports.getAllStores = async (req, res) => {
     try {
-        const Stores = await Store.find();
+        const Stores = await Store.find().populate(["categories","products"]);
         res.status(200).send({message:"Success", data:Stores});
     } catch (error) {
         res.status(500).send({ error:error.message });
@@ -33,7 +33,7 @@ exports.getAllStores = async (req, res) => {
 exports.getStoreById = async (req, res) => {
     try {
         const { id } = req.params;
-        const Store = await Store.findById(id);
+        const Store = await Store.findById(id).populate(["categories","products"]);
 
         if (!Store) {
             return res.status(404).send({ error: "Not found",message:"Store not found",data:null });
@@ -81,7 +81,7 @@ exports.getStoresByCategory = async(req,res)=>{
     
           const stores = await Store.find({
             categories: categoryId,
-          }).populate("categories"); 
+          }).populate(["categories","products"]); 
       
           if (!stores || stores.length === 0) {
             return res.status(404).send({ message: "No stores found for this category", error:"Not found" });
