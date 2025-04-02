@@ -87,7 +87,7 @@ exports.getStoresByCategory = async(req,res)=>{
             return res.status(404).send({ message: "No stores found for this category", error:"Not found" });
           }
       
-          res.status(200).send(stores);
+          res.status(200).send({message: "success", data:stores});
         } catch (error) {
           console.error(error);
           res.status(500).send({ message: "Server error" });
