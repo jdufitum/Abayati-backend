@@ -35,6 +35,10 @@
       "description": "Search products"
   },
   {
+    "name": "Store",
+    "description": "Store Operations"
+},
+  {
     "name": "Measurements",
     "description": "Get AI measurements by pictures!"
 }, {
@@ -641,6 +645,242 @@
       "responses": {
         "200": { "description": "Product retrived successfully" },
         "404": { "description": "Product not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
+  "/createStore": {
+    "post": {
+        "tags": [
+            "Store"
+          ],
+      "summary": "Create store ",
+      "parameters": [
+        {
+            "name": "name",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+          },
+          {
+            "name": "categories",
+            "in": "formData",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },          
+          {
+            "name": "products",
+            "in": "formData",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+          },
+          {
+            "name": "imgUrl",
+            "in": "formData",
+            "required": true,
+            "type":"file"
+          }
+          
+      ],
+      "responses": {
+        "201": { "description": "Store created successfully" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+"/getStoresByCategory/{id}": {
+    "get": {
+        "tags": [
+            "Store"
+          ],
+      "summary": "Get all stores that has a specified category ",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the category",
+          "schema": {
+            "type": "string",
+            "example": "660f29bdfc13ae1a8f0001a9"
+          }
+        }
+      ],
+      "responses": {
+        "201": { "description": "Stores retrived successfully" },
+        "404": { "description": "Stores not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
+  "/getProductsInStore/{id}": {
+    "get": {
+        "tags": [
+            "Store"
+          ],
+      "summary": "Get all products in a specified store ",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the store",
+          "schema": {
+            "type": "string",
+            "example": "660f29bdfc13ae1a8f0001a9"
+          }
+        }
+      ],
+      "responses": {
+        "201": { "description": "Products retrived successfully" },
+        "404": { "description": "Products not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+  "/stores": {
+    "get": {
+        "tags": [
+            "Store"
+          ],
+      "summary": "Get all stores ",
+      "parameters": [
+      ],
+      "responses": {
+        "201": { "description": "Stores retrived successfully" },
+        "404": { "description": "Stores not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
+  "/getStoreById/{id}": {
+    "get": {
+        "tags": [
+            "Store"
+          ],
+      "summary": "Get store by id",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the store",
+          "schema": {
+            "type": "string",
+            "example": "660f29bdfc13ae1a8f0001a9"
+          }
+        }
+      ],
+      "responses": {
+        "201": { "description": "Store retrived successfully" },
+        "404": { "description": "Store not found" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
+  "/updateStore/{id}": {
+    "put": {
+        "tags": [
+            "Store"
+          ],
+      "summary": "Update store ",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the store",
+          "schema": {
+            "type": "string",
+            "example": "660f29bdfc13ae1a8f0001a9"
+          }
+        },
+        {
+            "name": "name",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+          },
+          {
+            "name": "categories",
+            "in": "formData",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },          
+          {
+            "name": "products",
+            "in": "formData",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+          },
+          {
+            "name": "imgUrl",
+            "in": "formData",
+            "required": true,
+            "type":"file"
+          }
+          
+      ],
+      "responses": {
+        "201": { "description": "Store update successfully" },
+        "500": { "description": "Internal server error" }
+      }
+    }
+  },
+
+  "/deleteStore/{id}": {
+    "delete": {
+        "tags": [
+            "Store"
+          ],
+      "summary": "Delete store by id",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "ID of the store",
+          "schema": {
+            "type": "string",
+            "example": "660f29bdfc13ae1a8f0001a9"
+          }
+        }
+      ],
+      "responses": {
+        "201": { "description": "Store deleted successfully" },
+        "404": { "description": "Store not found" },
         "500": { "description": "Internal server error" }
       }
     }

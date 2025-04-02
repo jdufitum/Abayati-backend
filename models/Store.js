@@ -25,7 +25,7 @@ const storeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    imageUrl: {
+    imgUrl: {
       type: String,
       default: "",
     },
