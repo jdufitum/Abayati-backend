@@ -33,13 +33,13 @@ exports.getAllStores = async (req, res) => {
 exports.getStoreById = async (req, res) => {
     try {
         const { id } = req.params;
-        const Store = await Store.findById(id).populate(["categories","products"]);
+        const store = await Store.findById(id).populate(["categories","products"]);
 
-        if (!Store) {
+        if (!store) {
             return res.status(404).send({ error: "Not found",message:"Store not found",data:null });
         }
 
-        res.status(200).send({message: "Success", data:Store});
+        res.status(200).send({message: "Success", data:store});
     } catch (error) {
         res.status(500).send({ error:error.message });
     }
