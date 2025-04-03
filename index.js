@@ -11,6 +11,7 @@ const categoryRoutes = require("./routes/categoryRoutes")
 const searchRoutes = require("./routes/searchRoutes")
 const paymentRoutes = require("./routes/paymentRoutes")
 const measurementRoutes = require("./routes/measurementRoutes")
+const storeRoutes = require("./routes/storeRoutes")
 
 const SwaggerUi = require("swagger-ui-express")
 const swaggerDocument = require("./api-docs.json")
@@ -28,6 +29,7 @@ app.use(categoryRoutes)
 app.use(searchRoutes)
 app.use(paymentRoutes)
 app.use(measurementRoutes)
+app.use(storeRoutes)
 app.use('/api-docs',SwaggerUi.serve, SwaggerUi.setup(swaggerDocument))
 
 const port = process.env.PORT

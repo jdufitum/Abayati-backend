@@ -1,12 +1,28 @@
 require("dotenv").config();
 const axios = require("axios");
 const { cloudinary } = require("../utils/cloudinary");
+const Product = require("../models/Product")
+const jwt = require("jsonwebtoken")
 
-// app.post("/measurements", upload.fields([{ name: "front" }, { name: "side" }]),
+const ACCESS_KEY = process.env.KLING_ACCESS_KEY; // Your Access Key ID
+const SECRET_KEY = process.env.KLING_SECRET_KEY; // Your Secret Key
+
+function generateApiToken() {
+    const payload = {
+        iss: ACCESS_KEY, 
+        exp: Math.floor(Date.now() / 1000) + 1800, // Expires in 30 minutes
+        nbf: Math.floor(Date.now() / 1000) - 5     // Becomes valid 5 seconds earlier
+    };
+
+    const token = jwt.sign(payload, SECRET_KEY, { algorithm: "HS256" });
+    return token; 
+}
+
 exports.createMeasurements = async (req, res) => {
   try {
     const { name, gender, height,weight } = req.body;
     const frontImage = req.files["front_image"][0];
+    console.log(frontImage)
     const sideImage = req.files["side_image"][0];
     
     const front_image = frontImage.buffer.toString("base64");
@@ -111,29 +127,53 @@ exports.getMeasurementsById = async (req,res)=>{
   }
 }
 
-exports.virtualTryOn = async (req, res) => {
-  const { user_id, clothing_id } = req.body;
+exports.createTryOnTask = async (req, res) => {
+  const token = generateApiToken();
   try {
-    const response = await axios.post(
-      `${THREEDLOOK_BASE_URL}/virtual-tryon`,
-      {
-        user_id,
-        clothing_id,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `APIKey ${process.env.THREEDLOOK_API_KEY}`,
-        },
-      }
-    );
+    const { modelName } = req.body;
+    const humanImage = req.files["humanImage"][0].buffer.toString("base64")
+    // const clothImage = req.files["clothImage"][0].buffer.toString("base64")
+    if (!humanImage) {
+      return res.status(400).json({ success: false, error: "humanImage is required" });
+    }
 
-    res.status(200).json({
-      success: true,
-      data: response.data,
+    const clothId = req.body.clothId
+    const cloth = await Product.findById(clothId)
+    if(!cloth){
+      return res.status(404).send({message:"Invalid product id", error:"Not found"})
+    }
+    console.log("clotheeeee ",cloth.imgUrl)
+
+    const data = await axios.get(cloth.imgUrl, { responseType: 'arraybuffer' });
+    let clothImage = Buffer.from(data.data, 'binary').toString('base64');
+    clothImage = clothImage.replace(/^data:image\/[a-z]+;base64,/, '');
+
+    const payload = {
+      model_name: modelName || "kolors-virtual-try-on-v1-5",
+      human_image: humanImage, 
+      cloth_image: clothImage || null,
+    };
+
+    const response = await axios.post(`${process.env.KLING_API_URL}`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, 
+      },
+    }); 
+    const taskId = response.data.data.task_id
+    console.log("Waiting for 60 seconds for processing to complete...")
+    await new Promise((resolve) => setTimeout(resolve, 60000));
+
+    const result = await axios.get(`${process.env.KLING_API_URL}/${taskId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
+
+    return res.status(200).json({ success: true, data: result.data.data});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, error: "Virtual Try-On failed" });
+    return res.status(500).json({ success: false, error: "Failed to create virtual try-on task" });
   }
 };
