@@ -938,21 +938,6 @@
     }
   },
 
-  "/user/getMeasurements": {
-    "get": {
-        "tags": [
-            "Measurements"
-          ],
-      "summary": "Get measurements for all people",
-      "parameters": [
-      ],
-      "responses": {
-        "200": { "description": "Measurements retrived successfully" },
-        "404": { "description": "Measurements not found" },
-        "500": { "description": "Internal server error" }
-      }
-    }
-  },
 
   "/user/getMeasurement": {
     "get": {
