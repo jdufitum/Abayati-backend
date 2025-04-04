@@ -907,13 +907,13 @@
             "enum":["male","female"]
           },
           {
-            "name": "height",
+            "name": "height (in cm)",
             "in": "formData",
             "required": true,
             "type":"string"
           },
           {
-            "name": "weight",
+            "name": "weight (in kg)",
             "in": "formData",
             "required": true,
             "type":"string"

@@ -11,12 +11,12 @@ exports.createOrder = async (req, res) => {
     try {
        const token = req.headers.authorization?.split(' ')[1];
           if (!token) {
-            return res.status(401).json({message:"Access denied. No token provided.",error:"Access denied",data:null});
+            return res.status(401).send({message:"Access denied. No token provided.",error:"Access denied",data:null});
           }
           const decoded = jwt.verify(token, process.env.SECRET_KEY);
           const userId = decoded._id; 
       if (!userId) {
-        return res.status(400).json({ error: "Bad request", message:"Invalid data provided" });
+        return res.status(400).send({ error: "Bad request", message:"Invalid data provided" });
       }
       const user = await User.findById(userId)
       const cart = user.cart 
@@ -29,7 +29,7 @@ exports.createOrder = async (req, res) => {
       for (const item of cart) {
         const product = await Product.findById(item.productId);
         if (!product) {
-          return res.status(404).json({ error: "Product not found" });
+          return res.status(404).send({ error: "Product not found" });
         }
         products.push({ productId: product._id, quantity: item.quantity });
         totalAmount += product.price * item.quantity;
@@ -42,7 +42,7 @@ exports.createOrder = async (req, res) => {
       });
   
       await newOrder.save();
-      return res.status(201).json({ message: "Order created successfully", order: newOrder });
+      return res.status(201).send({ message: "Order created successfully", order: newOrder });
     } catch (err) {
       res.status(500).send(err.message);
     }
@@ -53,23 +53,23 @@ exports.createOrder = async (req, res) => {
         const {orderId, paymentMethodId } = req.body;
          const token = req.headers.authorization?.split(' ')[1];
             if (!token) {
-              return res.status(401).json({message:"Access denied. No token provided.",error:"Access denied",data:null});
+              return res.status(401).send({message:"Access denied. No token provided.",error:"Access denied",data:null});
             }
             const decoded = jwt.verify(token, process.env.SECRET_KEY);
             const userId = decoded._id; 
   
         if (!userId || !orderId || !paymentMethodId) {
-            return res.status(400).json({ error: "Missing required fields" });
+            return res.status(400).send({ error: "Missing required fields" });
         }
   
         const order = await Order.findById(orderId);
         if (!order) {
-            return res.status(404).json({ error: "Order not found" });
+            return res.status(404).send({ error: "Order not found" });
         }
   
         // Ensure order is not already paid
         if (order.status === "paid") {
-            return res.status(400).json({ error: "Order already paid" });
+            return res.status(400).send({ error: "Order already paid" });
         }
   
         const paymentIntent = await stripe.paymentIntents.create({
@@ -97,16 +97,19 @@ exports.createOrder = async (req, res) => {
         if (paymentIntent.status === "succeeded") {
             order.status = "paid";
             await order.save();
-            return res.status(200).json({ message: "Payment successful", payment, order });
+
+            await User.findByIdAndUpdate(userId, { $set: { cart: [] } });
+
+            return res.status(200).send({ message: "Payment successful", data: {payment, order} });
         } else {
-            return res.status(400).json({ error: "Payment failed", payment });
+            return res.status(400).send({ error: "Payment failed", payment });
         }
   
     } catch (err) {
         console.error("Stripe Error:", err);
-        return res.status(500).json({ error: "Payment processing failed", details: err.message });
+        return res.status(500).send({ error: "Payment processing failed", details: err.message });
     }
-  };
+  }; 
   
 
 

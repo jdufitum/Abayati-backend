@@ -18,15 +18,26 @@ function generateApiToken() {
     return token; 
 }
 
+function extractTaskSetId(taskSetUrl) {
+  return taskSetUrl.split('/').slice(-2, -1)[0];
+}
+
 exports.createMeasurements = async (req, res) => {
   try {
     const { name, gender, height,weight } = req.body;
     const frontImage = req.files["front_image"][0];
-    console.log(frontImage)
     const sideImage = req.files["side_image"][0];
     
     const front_image = frontImage.buffer.toString("base64");
-    const side_image = sideImage.buffer.toString("base64");;
+    const side_image = sideImage.buffer.toString("base64");
+
+    if(height <150 || height>220){
+      return res.status(400).send({message:"The height must be >=150 and <=220 cm", error:"Bad request"})
+    }
+
+    if(weight<30 || weight>200){
+      return res.status(400).send({message:"The weight must be >=30 and <=200 kg", error:"Bad request"})
+    }
 
     const payload = {
       name,
@@ -51,38 +62,114 @@ exports.createMeasurements = async (req, res) => {
         },
       }
     );
-
-    const taskSetUrl = response.data.task_set_url;
-
-    // Poll the task status until it's completed
-    const checkTaskStatus = async () => {
-      try {
-        const taskStatusResponse = await axios.get(taskSetUrl, {
-          headers: {
-            "Authorization": `APIKey ${process.env.THREEDLOOK_API_KEY}`
-          },
-        });
-        if (taskStatusResponse.data.status === "completed") {
-          return res.status(200).send({
-            success: true,
-            data: taskStatusResponse.data,
-          });
-        } else {
-          setTimeout(checkTaskStatus, 3000); 
-        }
-      } catch (error) {
-        console.error("Error checking task status:", error);
-        res.status(500).send({ success: false, error: "Failed to get task status" });
+    const taskSetId = extractTaskSetId(response.data.task_set_url)
+    const responsee = await axios.get(
+      `https://saia.3dlook.me/api/v2/queue/${taskSetId}`,
+      {
+        headers: {
+          "Authorization": `APIKey ${process.env.THREEDLOOK_API_KEY}`,
+        },
+        "processData": false,
       }
-    };
-    checkTaskStatus();
+    );
 
-    return res.send({ data: response.data, message: "Success" });
+    return res.send({ data: responsee.data, message: "Success" });
   } catch (error) {
     console.error(error.response?.data || error.message);
     return res.status(500).send({ error: "Error processing measurements" });
   }
 };
+
+
+// exports.createMeasurements = async (req, res) => {
+//   try {
+//     const { name, gender, height, weight } = req.body;
+//     const frontImage = req.files["front_image"][0];
+//     const sideImage = req.files["side_image"][0];
+    
+//     const front_image = frontImage.buffer.toString("base64");
+//     const side_image = sideImage.buffer.toString("base64");
+
+//     if (height < 150 || height > 220) {
+//       return res.status(400).send({ message: "The height must be >=150 and <=220 cm", error: "Bad request" });
+//     }
+//     if (weight < 30 || weight > 200) {
+//       return res.status(400).send({ message: "The weight must be >=30 and <=200 kg", error: "Bad request" });
+//     }
+
+//     const payload = {
+//       name,
+//       gender,
+//       height,
+//       weight,
+//       front_image,
+//       side_image,
+//       photos: [
+//         { type: "front_image", content: front_image },
+//         { type: "side_image", content: side_image },
+//       ],
+//     };
+
+//     const response = await axios.post(
+//       `${process.env.THREEDLOOK_MEASUREMENT_URL}`,
+//       payload,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `APIKey ${process.env.THREEDLOOK_API_KEY}`,
+//         },
+//       }
+//     );
+
+//     const taskSetUrl = response.data.task_set_url;
+//     let personId = null;
+
+//     // Polling loop to wait for task completion
+//     while (true) {
+//       try {
+//         const taskStatusResponse = await axios.get(taskSetUrl, {
+//           headers: {
+//             Authorization: `APIKey ${process.env.THREEDLOOK_API_KEY}`,
+//           },
+//         });
+
+//         if (taskStatusResponse.data.status === "completed") {
+//           personId = taskStatusResponse.data.id;
+//           break;
+//         }
+        
+//         console.log("Waiting for 60 seconds for processing to complete...");
+//         await new Promise((resolve) => setTimeout(resolve, 60000));
+//       } catch (error) {
+//         console.error("Error checking task status:", error);
+//         return res.status(500).send({ success: false, error: "Failed to get task status" });
+//       }
+//     }
+
+//     // Fetch the measurement data using the retrieved personId
+//     try {
+//       const measurementResponse = await axios.get(
+//         `${process.env.THREEDLOOK_GET_URL}/${personId}/`,
+//         {
+//           headers: {
+//             Authorization: `APIKey ${process.env.THREEDLOOK_API_KEY}`,
+//           },
+//         }
+//       );
+//       return res.status(200).json({
+//         success: true,
+//         data: measurementResponse.data,
+//       });
+//     } catch (error) {
+//       console.error("Error retrieving measurements:", error);
+//       return res.status(500).json({ success: false, error: "Failed to get measurements" });
+//     }
+//   } catch (error) {
+//     console.error(error.response?.data || error.message);
+//     return res.status(500).send({ error: "Error processing measurements" });
+//   }
+// };
+
 
 exports.getAllPersons = async(req,res)=>{
   try {
