@@ -955,7 +955,7 @@
     }
   },
 
-  " /user/virtualTryon/": {
+  "/user/virtualTryon": {
     "post": {
         "tags": [
             "Virtual TryOn"

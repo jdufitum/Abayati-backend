@@ -134,7 +134,6 @@ exports.getAllPersons = async(req,res)=>{
 }
 
 exports.getMeasurementsById = async (req,res)=>{
-  // / Extract person_id from the request parameters
   try {
     const token = req.headers.authorization?.split(' ')[1];
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
@@ -167,6 +166,71 @@ exports.getMeasurementsById = async (req,res)=>{
     return res.status(500).json({ success: false, error: "Failed to get measurements" });
   }
 }
+
+exports.getMeasurementsById = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const user = await User.findById(decoded._id);
+
+    const taskId = user.taskSetId;
+
+    // Step 1: Poll task status until it's ready
+    let taskResponse;
+    do {
+      taskResponse = await axios.get(
+        `https://saia.3dlook.me/api/v2/queue/${taskId}`,
+        {
+          headers: {
+            Authorization: `APIKey ${process.env.THREEDLOOK_API_KEY}`,
+          },
+        }
+      );
+
+      const { is_ready, is_successful } = taskResponse.data;
+
+      if (is_ready) {
+        if (!is_successful) {
+          return res.status(400).json({
+            success: false,
+            message: "Task processing failed",
+            error: taskResponse.data,
+          });
+        }
+        break;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 4000));
+    } while (true);
+
+    // Step 2: Extract person_id from the task response
+    const personId = taskResponse.data.person_id; // Should be present if task is successful
+
+    if (!personId) {
+      return res.status(400).json({ success: false, message: "person_id not found" });
+    }
+
+    // Step 3: Get final measurement result using personId
+    const measurementResponse = await axios.get(
+      `https://saia.3dlook.me/api/v2/persons/${personId}`,
+      {
+        headers: {
+          Authorization: `APIKey ${process.env.THREEDLOOK_API_KEY}`,
+        },
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: measurementResponse.data,
+    });
+
+  } catch (error) {
+    console.error(error?.response?.data || error.message);
+    return res.status(500).json({ success: false, error: "Failed to get measurements" });
+  }
+};
+
 
 exports.createTryOnTask = async (req, res) => {
   const token = generateApiToken();
