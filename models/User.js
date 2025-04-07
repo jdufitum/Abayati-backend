@@ -37,7 +37,10 @@ const userSchema = mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
     },
-  ]
+  ],
+  taskSetId: {
+    type: String,
+  },
 });
 
 const User = new mongoose.model("User", userSchema);

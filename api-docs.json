@@ -9,14 +9,18 @@
     "basePath": "/",
     "schemes": ["https"],
     "securityDefinitions": {
-    "Authorization": {
+    "BearerAuth": {
       "type": "apiKey",
       "name": "Authorization",
-      "description": "Value: Bearer ",
-      "in": "header",
-      "scheme": "bearer"
+      "description": "Enter your token in the format: Bearer <your-token> ",
+      "in": "header"
     }
   },
+  "security": [
+  {
+    "BearerAuth": []
+  }
+],
     "tags": [
       {
           "name": "User",
@@ -53,16 +57,7 @@
     "name": "Payments",
     "description": "Payments Operations"
 }
-  ],
- "components": {
-  "securitySchemes": {
-    "BearerAuth": {
-      "type": "http",
-      "scheme": "bearer",
-      "bearerFormat": "JWT"
-    }
-  }
-}
+  ]
 ,
     "paths": {
       "/register": {
@@ -126,11 +121,7 @@
             "User"
           ],
           "summary": "Get user by Token",
-          "security": [
-      {
-        "BearerAuth": []
-      }
-    ],
+      
           "parameters": [
           ],
           "responses": {
@@ -147,11 +138,7 @@
             "User"
           ],
           "summary": "Get the cart of the logged in user",
-          "security": [
-      {
-        "BearerAuth": []
-      }
-    ],
+      
           "parameters": [
           ],
           "responses": {
@@ -223,11 +210,7 @@
             "User"
           ],
           "summary": "Get wishlist of the logged in user",
-          "security": [
-      {
-        "BearerAuth": []
-      }
-    ],
+      
           "parameters": [
           ],
           "responses": {
@@ -907,13 +890,13 @@
             "enum":["male","female"]
           },
           {
-            "name": "height",
+            "name": "height (in cm)",
             "in": "formData",
             "required": true,
             "type":"string"
           },
           {
-            "name": "weight",
+            "name": "weight (in kg)",
             "in": "formData",
             "required": true,
             "type":"string"
@@ -938,23 +921,8 @@
     }
   },
 
-  "/user/getMeasurements": {
-    "get": {
-        "tags": [
-            "Measurements"
-          ],
-      "summary": "Get measurements for all people",
-      "parameters": [
-      ],
-      "responses": {
-        "200": { "description": "Measurements retrived successfully" },
-        "404": { "description": "Measurements not found" },
-        "500": { "description": "Internal server error" }
-      }
-    }
-  },
 
-  "/user/getMeasurements/{personId}": {
+  "/user/getMeasurement": {
     "get": {
         "tags": [
             "Measurements"
@@ -970,7 +938,7 @@
     }
   },
 
-  " /user/virtualTryon/": {
+  "/user/virtualTryon": {
     "post": {
         "tags": [
             "Virtual TryOn"
@@ -1176,11 +1144,7 @@
     "summary": "Create an order",
     "description": "Creates an order from the user's cart.",
     "tags": ["Order"],
-    "security": [
-      {
-        "BearerAuth": []
-      }
-    ],
+
    "parameters":[],
     "responses": {
       "201": {
@@ -1203,11 +1167,6 @@
         "summary": "Create a payment",
         "description": "Processes a payment for an order.",
         "tags": ["Payments"],
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
        "parameters": [
       {
         "name": "OrderId",
